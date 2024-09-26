@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asynchronous FilePond Upload</title>
+
+  
+  <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet">
+  <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+
+  <style>
+    
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa; 
+      color: #333; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 50px;
+      overflow-x: hidden; 
+      transition: background-color 0.3s, color 0.3s; 
+    }
+
+    body.dark-mode {
+      background-color: #343a40; 
+      color: #f8f9fa; 
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    
+    .filepond-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    
+    #uploadButton {
+      display: inline-block;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #007bff; 
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    body.dark-mode #uploadButton {
+      background-color: #495057; 
+    }
+
+    #uploadButton:hover {
+      background-color: #0056b3;
+    }
+
+    body.dark-mode #uploadButton:hover {
+      background-color: #343a40; 
+    }
+
+    
+    .filepond--root {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      background-color: white; 
+      border: 0px solid #eee; 
+      border-radius: 4px; 
+      transition: background-color 0.3s, border-color 0.3s; 
+    }
+
+    
+    body.dark-mode .filepond--root {
+      background-color: #495057; 
+      border-color: #6c757d; 
+    }
+
+    
+    body.dark-mode .filepond--panel-root {
+      background-color: #495057; 
+    }
+
+    body.dark-mode .filepond--item {
+      background-color: #6c757d; 
+      border: 0px solid #495057; 
+    }
+
+    body.dark-mode .filepond--item-panel {
+      background-color: #444; 
+    }
+
+    body.dark-mode .filepond--drop-label {
+      color: #ddd; 
+    }
+
+    body.dark-mode .filepond--label-action {
+      text-decoration-color: #ccc; 
+    }
+
+    body.dark-mode .filepond--drip-blob {
+      background-color: #555; 
+    }
+
+    body.dark-mode .filepond--file-action-button {
+      background-color: rgba(255, 255, 255, 0.5); 
+      color: black; 
+    }
+
+    
+    body.dark-mode [data-filepond-item-state*='error'] .filepond--item-panel {
+      background-color: #ff5555; 
+    }
+
+    body.dark-mode [data-filepond-item-state='processing-complete'] .filepond--item-panel {
+      background-color: #55ff55; 
+    }
+
+    
+    .filepond--item {
+      touch-action: manipulation; 
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Asynchronous File Upload Using FilePond</h1>
+
+  
+  <div class="filepond-container">
+    
+    <input type="file" class="filepond" name="filepond" multiple>
+  </div>
+
+  
+  <div class="upload-container">
+    <button id="uploadButton">Upload All</button>
+  </div>
+
+  
+  <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+  <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+
+  <script>
+    // Register the Image Preview plugin
+    FilePond.registerPlugin(FilePondPluginImagePreview);
+
+    // Create the FilePond instance and allow multiple files
+    const pond = FilePond.create(document.querySelector('input[name="filepond"]'), {
+      allowMultiple: true,
+      instantUpload: false,
+      credits: false,
+      allowProcess: false,
+      imagePreviewHeight: 200,  // Customize the preview height
+      acceptedFileTypes: ['image/*'],  // Only accept image files
+    });
+
+    // Configure FilePond's server settings
+    FilePond.setOptions({
+      server: {
+        process: '/upload'
+      }
+    });
+
+    // Get reference to the "Upload All" button
+    const uploadButton = document.getElementById('uploadButton');
+
+    // Add event listener to the button
+    uploadButton.addEventListener('click', () => {
+      // Trigger upload of all files in the queue
+      pond.processFiles();
+    });
+
+    // Add event listener for file processing start
+    pond.on('processfilestart', () => {
+      console.log('Starting upload...');
+    });
+
+    // Add event listener for file processing completion
+    pond.on('processfile', (error, file) => {
+      if (!error) {
+        console.log('File uploaded successfully:', file.filename);
+        // Remove the uploaded file from the FilePond instance
+        pond.removeFile(file.id);
+      }
+    });
+
+    // Function to set dark mode based on system preference
+    function setDarkMode() {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+
+    // Initial check on page load
+    setDarkMode();
+
+    // Listen for changes in the system preference
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setDarkMode);
+  </script>
+</body>
+</html>
