@@ -7,9 +7,7 @@ const cors = require('cors');
 const app = express();
 const PORT = 3000;
 
-
 app.use(cors());
-
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -28,9 +26,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-
 app.use(express.static('public'));
-
 
 app.post('/upload', upload.single('filepond'), (req, res) => {
   
@@ -43,7 +39,6 @@ app.post('/upload', upload.single('filepond'), (req, res) => {
     filename: req.file.filename,
   });
 });
-
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
