@@ -1,5 +1,7 @@
 #!/bin/bash
 
+clear
+
 # Function to check if nvm is installed
 check_nvm_installed() {
     # Check if nvm is available

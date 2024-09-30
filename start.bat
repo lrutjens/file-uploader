@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+cls
+
 REM Check if Node.js is installed by checking the version
 node --version >nul 2>&1
 if %errorlevel% neq 0 (

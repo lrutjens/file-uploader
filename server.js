@@ -6,6 +6,7 @@ const cors = require('cors');
 
 const app = express();
 const PORT = 3000;
+const ADDRESS = '0.0.0.0'
 
 app.use(cors());
 
@@ -40,6 +41,6 @@ app.post('/upload', upload.single('filepond'), (req, res) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://0.0.0.0:${PORT}`);
+app.listen(PORT, ADDRESS, () => {
+  console.log(`Server is running on http://${ADDRESS}:${PORT}`);
 });
